@@ -11,11 +11,11 @@ const rs = require('readline-sync')
 
 console.log('=== Saiba a temporada e o elenco de cada episódio de Breaking Bad ===')
 
-const numeroEpisodio = rs.question('De qual episódio deseja saber? \n')
 
-function getAPI(episodio) {
+function getAPI() {
 
-    axios.get(` ${episodio}`)
+    const numeroEpisodio = rs.question('De qual episódio deseja saber? \n')
+    axios.get(`https://www.breakingbadapi.com/api/episodes/${numeroEpisodio}`)
         .then(res => {
             const data = res.data[0]
 
@@ -25,8 +25,13 @@ function getAPI(episodio) {
         })
 
         .catch(err => {
-            console.log(err)
+            if (err.message === "Cannot destructure property 'characters' of 'data' as it is undefined.") {
+                console.log('Episódio não existe!')
+                getAPI()
+            } else {
+                console.log(err.message)
+            }
         })
-} 
+}
 
-getAPI(numeroEpisodio)
+getAPI()

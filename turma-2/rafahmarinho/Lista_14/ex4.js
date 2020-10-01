@@ -6,19 +6,24 @@
 const axios = require('axios')
 const rs = require('readline-sync')
 
-const qualCEP = rs.question('Digite um CEP [somente números]: \n')
-function getAPI(CEP) {
-    axios.get(`https://api.postmon.com.br/v1/cep/${CEP}`)
-    .then(res =>{
-        const dataAPI = res.data
+function getAPI() {
+    const qualCEP = rs.question('Digite um CEP [somente números]: \n')
+    axios.get(`https://api.postmon.com.br/v1/cep/${qualCEP}`)
+        .then(res => {
+            const dataAPI = res.data
 
-        const {logradouro, bairro, cidade, estado} = dataAPI
+            const { logradouro, bairro, cidade, estado } = dataAPI
 
-        console.log(`${logradouro} - ${bairro} -  ${cidade} -  ${estado}`)
-    })
-    .catch(err => {
-        console.log(err)
-    })
+            console.log(`${logradouro} - ${bairro} -  ${cidade} -  ${estado}`)
+        })
+        .catch(err => {
+            if (err.message === "Request failed with status code 404") {
+                console.log('CEP inválido.')
+                getAPI()
+            } else {
+                console.log(err.message)
+        }
+        })
 }
 
-getAPI(qualCEP)
+getAPI()
